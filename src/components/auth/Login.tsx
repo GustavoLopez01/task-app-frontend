@@ -1,45 +1,42 @@
-import {
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-} from 'react'
-import type { AuthLogin, AuthLoginResponse } from '../../types'
-import { authLogin } from '../../api/Auth'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 import { InputWithLabel } from '../inputs/InputWithLabel'
+import { authLogin } from '../../api/Auth'
+import type { AuthLogin, AuthLoginResponse } from '../../types'
+import { useState } from 'react'
 
 type LoginProps = {
   setIsLogin: (value: boolean) => void
 }
 
 const Login = ({ setIsLogin }: LoginProps) => {
-  const [auth, setAuth] = useState<AuthLogin>({
-    email: '',
-    password: ''
-  })
+  const {
+    register,
+    formState: { errors },
+    handleSubmit } = useForm<AuthLogin>({
+      defaultValues: {
+        email: '',
+        password: ''
+      }
+    })
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const [errorResponse, setErrorResponse] = useState('')
+
+  const onSubmit: SubmitHandler<AuthLogin> = async (data) => {
     try {
-      event.preventDefault()
-      const response: AuthLoginResponse = await authLogin(auth)
+      const response: AuthLoginResponse = await authLogin(data)
       if (response.success) {
         document.cookie = `token=${response.token}`
+        return
       }
+      setErrorResponse(response.message)
     } catch (error) {
       console.error(`Ocurrió un error al autenticar al usuario`);
     }
   }
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-    setAuth({
-      ...auth,
-      [name]: value
-    })
-  }
-
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       className="p-4 space-y-4 font-montserrat-regular"
       autoComplete="off"
     >
@@ -52,7 +49,8 @@ const Login = ({ setIsLogin }: LoginProps) => {
         type="text"
         placeholder="Ingresa tu correo electrónico"
         label="Correo electrónico"
-        handleChange={handleChange}
+        error={errors.email ? 'El correo electrónico es obligatorio' : ''}
+        register={register('email', { required: true })}
       />
 
       <InputWithLabel
@@ -60,7 +58,8 @@ const Login = ({ setIsLogin }: LoginProps) => {
         type="password"
         placeholder="Ingresa tu contraseña"
         label="Contraseña"
-        handleChange={handleChange}
+        error={errors.password ? 'La contraseña es obligatoria' : ''}
+        register={register('password', { required: true })}
       />
 
       <button
@@ -79,6 +78,8 @@ const Login = ({ setIsLogin }: LoginProps) => {
           Registrate aquí
         </span>
       </p>
+
+      {errorResponse && <p className="bg-red-500 w-full text-white text-center text-sm py-1 font-montserrat-bold"> {errorResponse} </p>}
     </form>
   )
 }
