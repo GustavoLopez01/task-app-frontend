@@ -1,11 +1,11 @@
-import type { ChangeEvent } from "react"
 
 type InputWithLabelProps = {
   id: string
   type: string,
   placeholder: string
   label: string
-  handleChange: (event: ChangeEvent<HTMLInputElement>) => void
+  register: object
+  error: string
 }
 
 export const InputWithLabel = ({
@@ -13,7 +13,8 @@ export const InputWithLabel = ({
   type,
   placeholder,
   label,
-  handleChange
+  register,
+  error,
 }: InputWithLabelProps) => {
   return (
     <div className="flex flex-col">
@@ -29,8 +30,11 @@ export const InputWithLabel = ({
         name={id}
         placeholder={placeholder}
         type={type}
-        onChange={handleChange}
+        max={100}
+        min={0}
+        {...register}
       />
+      {error && <span className="text-red-500 font-montserrat-semibold text-[13px]"> {error} </span>}
     </div>
   )
 }
