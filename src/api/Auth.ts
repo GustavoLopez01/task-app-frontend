@@ -1,5 +1,5 @@
-import { getHeaders } from '../helpers'
-import type { AuthLogin, NewUser } from '../types/index'
+import { getHeaders } from '@/helpers'
+import type { AuthLogin, NewUser } from '@/types/index'
 
 export const authLogin = async (auth: AuthLogin) => {
   try {
@@ -11,7 +11,7 @@ export const authLogin = async (auth: AuthLogin) => {
     })
     return await response.json()
   } catch (error) {
-    console.error(`Ocurrió un error al autenticar el usuario`);
+    console.error(`Ocurrió un error al autenticar el usuario ${error}`)
   }
 }
 
@@ -25,6 +25,6 @@ export const registerUser = async (user: NewUser) => {
     })
     return await response.json()
   } catch (error) {
-    console.error(`Ocurrió un error al registrar al usuario`);
+    console.error(`Ocurrió un error al registrar al usuario ${error}`)
   }
 }

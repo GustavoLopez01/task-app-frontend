@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
-import { InputWithLabel } from '../inputs/InputWithLabel'
-import { registerUser } from '../../api/Auth'
-import type { NewUser, NewUserResponse } from '../../types'
+import { InputWithLabel } from '@/components/inputs/InputWithLabel'
+import { registerUser } from '@/api/Auth'
+import type { NewUser, NewUserResponse } from '@/types'
 
 type RegisterProps = {
   setIsLogin: (value: boolean) => void

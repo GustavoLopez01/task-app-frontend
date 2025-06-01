@@ -1,8 +1,8 @@
-import { useForm, type SubmitHandler } from 'react-hook-form'
-import { InputWithLabel } from '../inputs/InputWithLabel'
-import { authLogin } from '../../api/Auth'
-import type { AuthLogin, AuthLoginResponse } from '../../types'
 import { useState } from 'react'
+import { useForm, type SubmitHandler } from 'react-hook-form'
+import { InputWithLabel } from '@/components/inputs/InputWithLabel'
+import { authLogin } from '@/api/Auth'
+import type { AuthLogin, AuthLoginResponse } from '@/types'
 
 type LoginProps = {
   setIsLogin: (value: boolean) => void
@@ -30,7 +30,7 @@ const Login = ({ setIsLogin }: LoginProps) => {
       }
       setErrorResponse(response.message)
     } catch (error) {
-      console.error(`Ocurrió un error al autenticar al usuario`);
+      console.error(`Ocurrió un error al autenticar al usuario ${error}`);
     }
   }
 
