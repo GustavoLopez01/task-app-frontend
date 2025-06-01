@@ -1,92 +1,86 @@
-import {
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-} from 'react'
-import type { AuthLogin } from '../../types'
-import { authLogin } from '../../api/Auth'
+import { useState } from 'react'
+import { useForm, type SubmitHandler } from 'react-hook-form'
+import { InputWithLabel } from '@/components/inputs/InputWithLabel'
+import { authLogin } from '@/api/Auth'
+import type { AuthLogin, AuthLoginResponse } from '@/types'
 
-const Login = () => {
-  const [auth, setAuth] = useState<AuthLogin>({
-    email: '',
-    password: ''
-  })
+type LoginProps = {
+  setIsLogin: (value: boolean) => void
+}
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+const Login = ({ setIsLogin }: LoginProps) => {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit } = useForm<AuthLogin>({
+      defaultValues: {
+        email: '',
+        password: ''
+      }
+    })
+
+  const [errorResponse, setErrorResponse] = useState('')
+
+  const onSubmit: SubmitHandler<AuthLogin> = async (data) => {
     try {
-      event.preventDefault()
-      const response = await authLogin(auth)
+      const response: AuthLoginResponse = await authLogin(data)
+      if (response.success) {
+        document.cookie = `token=${response.token}`
+        return
+      }
+      setErrorResponse(response.message)
     } catch (error) {
-      console.error(`Ocurrió un error al autenticar al usuario`);
+      console.error(`Ocurrió un error al autenticar al usuario ${error}`);
     }
   }
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-    setAuth({
-      ...auth,
-      [name]: value
-    })
-  }
-
   return (
-    <div className="h-full flex justify-center items-center mx-5">
-      <div className="bg-white rounded-md shadow-2xl w-[400px] min-h-[200px] py-4">
-        <form
-          onSubmit={handleSubmit}
-          className="p-4 space-y-4 font-montserrat-regular"
-          autoComplete="off"
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="p-4 space-y-4 font-montserrat-regular"
+      autoComplete="off"
+    >
+      <h3 className="text-center text-2xl font-montserrat-bold">
+        Iniciar sesión
+      </h3>
+
+      <InputWithLabel
+        id="email"
+        type="text"
+        placeholder="Ingresa tu correo electrónico"
+        label="Correo electrónico"
+        error={errors.email ? 'El correo electrónico es obligatorio' : ''}
+        register={register('email', { required: true })}
+      />
+
+      <InputWithLabel
+        id="password"
+        type="password"
+        placeholder="Ingresa tu contraseña"
+        label="Contraseña"
+        error={errors.password ? 'La contraseña es obligatoria' : ''}
+        register={register('password', { required: true })}
+      />
+
+      <button
+        className="w-full bg-sky-600 font-montserrat-bold rounded-full px-2 py-2 text-white hover:bg-sky-700 cursor-pointer"
+        type="submit"
+      >
+        Inicia sesión
+      </button>
+
+      <p className="text-center">
+        ¿Aún no tienes cuenta?
+        <span
+          className="px-1 underline font-semibold cursor-pointer"
+          onClick={() => setIsLogin(false)}
         >
-          <h3 className="text-center text-2xl font-montserrat-bold">
-            Iniciar sesión
-          </h3>
-          <div className="flex flex-col">
-            <label
-              className="font-montserrat-semibold"
-              htmlFor="email"
-            >
-              Correo electrónico
-            </label>
-            <input
-              className="outline-0 px-3 py-1 border-1 border-gray-400 rounded-full"
-              id="email"
-              name="email"
-              placeholder="Ingresa tu correo electrónico"
-              type="text"
-              onChange={handleChange}
-            />
-          </div>
+          Registrate aquí
+        </span>
+      </p>
 
-          <div className="flex flex-col">
-            <label
-              className="font-montserrat-semibold"
-              htmlFor="password"
-            >
-              Contraseña
-            </label>
-            <input
-              className="outline-0 px-2 py-1 border-1 border-gray-400 rounded-full"
-              id="password"
-              name="password"
-              placeholder="Ingresa tu contraseña"
-              type="password"
-              onChange={handleChange}
-            />
-          </div>
-
-          <button className="w-full bg-sky-600 font-montserrat-bold rounded-full px-2 py-2 text-white hover:bg-sky-700 cursor-pointer">
-            Inicia sesión
-          </button>
-
-          <p className="text-center">
-            ¿Aún no tienes cuenta?
-            <span className="px-1 underline font-semibold cursor-pointer">
-              Registrate aquí
-            </span>
-          </p>
-        </form>
-      </div>
-    </div>
+      {errorResponse && <p className="bg-red-500 w-full text-white text-center text-sm py-1 font-montserrat-bold"> {errorResponse} </p>}
+    </form>
   )
 }
 
