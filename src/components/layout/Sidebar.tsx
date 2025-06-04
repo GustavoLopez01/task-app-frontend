@@ -2,7 +2,7 @@ import { ROUTES } from '@/constants/constants'
 
 export const Sidebar = () => {
   return (
-    <div className="max-w-xs font-montserrat-regular border-r-1 border-gray-200 h-full flex flex-col shadow-xl">
+    <div className="max-w-xs min-w-xs font-montserrat-regular border-r-1 border-gray-200 h-full flex flex-col shadow-xl">
       <h1 className="font-montserrat-bold text-2xl text-center py-3 text-sky-700">
         Task App
       </h1>
