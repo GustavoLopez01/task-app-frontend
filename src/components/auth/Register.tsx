@@ -100,7 +100,7 @@ const Register = ({ setIsLogin }: RegisterProps) => {
       />
 
       <button
-        className="w-full bg-sky-600 font-montserrat-bold rounded-full px-2 py-2 text-white hover:bg-sky-700 cursor-pointer"
+        className="w-full bg-sky-600 font-montserrat-bold rounded-full px-2 py-2 text-white transition hover:bg-sky-700 cursor-pointer"
         type="submit"
       >
         Registrate
