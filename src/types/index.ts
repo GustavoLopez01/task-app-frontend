@@ -28,3 +28,18 @@ export type NewUserResponse = {
   }
   message: string
 }
+
+export type TaskBody = {
+  id: number
+  title: string
+  description: string
+  number: number
+  categoryId: number
+}
+
+export type NewTask = Omit<TaskBody, 'id'>
+
+export type TasksResponse = {
+  success: boolean
+  tasks: TaskBody[]
+}

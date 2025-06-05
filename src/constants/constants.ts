@@ -1,5 +1,5 @@
 export const ROUTES = [
-  { label: 'Mis tareas', icon: 'task'},
-  { label: 'Agregar nueva tarea', icon: 'add_circle'},
-  { label: 'Perfil', icon: 'person' },
+  { label: 'Mis tareas', link: 'tasks', icon: 'task' },
+  { label: 'Agregar nueva tarea', link: 'add-task', icon: 'add_circle' },
+  { label: 'Perfil', link: 'profile', icon: 'person' },
 ]
