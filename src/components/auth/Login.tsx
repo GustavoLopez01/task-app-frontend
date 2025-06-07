@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, lazy } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router' 
-import { InputWithLabel } from '@/components/inputs/InputWithLabel'
 import { authLogin } from '@/api/Auth'
 import type { AuthLogin, AuthLoginResponse } from '@/types'
+
+const InputWithLabel = lazy(() => import('@/components/inputs/InputWithLabel'))
 
 type LoginProps = {
   setIsLogin: (value: boolean) => void
