@@ -1,3 +1,6 @@
+import { memo, lazy } from 'react'
+
+const ErrorMessage = lazy(() => import('@/components/ErrorMessage'))
 
 type InputWithLabelProps = {
   id: string
@@ -8,7 +11,7 @@ type InputWithLabelProps = {
   error: string
 }
 
-export const InputWithLabel = ({
+const InputWithLabel = memo(({
   id,
   type,
   placeholder,
@@ -34,7 +37,13 @@ export const InputWithLabel = ({
         min={0}
         {...register}
       />
-      {error && <span className="text-red-500 font-montserrat-semibold text-[13px]"> {error} </span>}
+      {error && (
+        <ErrorMessage
+          error={error}
+        />
+      )}
     </div>
   )
-}
+})
+
+export default InputWithLabel
