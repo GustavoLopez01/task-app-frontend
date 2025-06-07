@@ -39,6 +39,12 @@ export type TaskBody = {
 
 export type NewTask = Omit<TaskBody, 'id'>
 
+export type TaskResponse = {
+  success: boolean
+  errors: Errors[]
+  task: TaskBody
+}
+
 export type TasksResponse = {
   success: boolean
   tasks: TaskBody[]
