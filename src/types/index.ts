@@ -1,6 +1,10 @@
 export type Errors = {
   msg: string
 }
+export type ErrorResponse = {
+  success: boolean
+  errors: string[]
+}
 
 export type AuthLogin = {
   email: string
@@ -48,4 +52,21 @@ export type TaskResponse = {
 export type TasksResponse = {
   success: boolean
   tasks: TaskBody[]
+}
+
+export type Category = {
+  id: number
+  name: string
+  description: string
+}
+
+export type CategoriesResponse = {
+  success: boolean
+  categories: Category[]
+  errors: Errors[]
+}
+
+export type GeneralResponse = {
+  success: boolean
+  message: string
 }

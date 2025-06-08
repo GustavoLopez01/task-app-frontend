@@ -5,10 +5,11 @@ import {
   DialogTitle,
   DialogBackdrop
 } from '@headlessui/react'
-import { memo, lazy } from 'react'
+import { memo, lazy, useCallback, useEffect } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
-import type { NewTask, TaskResponse } from '@/types'
-import { fetchSaveTask } from '@/api/task'
+import useStore from '@/store/store'
+import { fetchSaveTask, fetchUpdateTask } from '@/api/task'
+import type { NewTask } from '@/types'
 
 const InputWithLabel = lazy(() => import('@/components/inputs/InputWithLabel'))
 const ErrorMessage = lazy(() => import('@/components/ErrorMessage'))
@@ -19,23 +20,75 @@ type AddTaskProps = {
 }
 
 const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
+  const setTasks = useStore(state => state.setTasks)
+  const setTaskToEdit = useStore(state => state.setTaskToEdit)
+  const tasks = useStore(state => state.tasks)
+  const categories = useStore(state => state.categories)
+  const taskToEdit = useStore(state => state.taskToEdit)
+
   const {
     formState: { errors },
+    reset,
     handleSubmit,
     register,
   } = useForm<NewTask>()
 
   const onSubmit: SubmitHandler<NewTask> = async (data) => {
+    if (!taskToEdit?.id) {
+      await handleSaveTask(data)
+    }
+    await handleUpdateTask(data)
+  }
+
+  const handleSaveTask = async (data: NewTask) => {
     try {
-      const response: TaskResponse = await fetchSaveTask(data)
-      if (response.success) {
+      const body = {
+        ...data,
+        number: tasks.length + 1
+      }
+      const response = await fetchSaveTask(body)
+      if (response?.success) {
+        setTasks([...tasks, response.task])
         close()
         return
       }
     } catch (error) {
-      console.error(`Ocurrió un error al guardar la tarea ${error}`);
+      console.error(`Ocurrió un error al crear la tarea ${error}`);
     }
   }
+
+  const handleUpdateTask = async (data: NewTask) => {
+    try {
+      const response = await fetchUpdateTask({
+        ...data,
+        id: taskToEdit?.id!
+      })
+
+      if (response?.success) {
+        const updatedTasks = tasks.map(task => {
+          if (task.id === response.task.id) {
+            return response.task
+          }
+          return task
+        })
+        setTasks(updatedTasks)
+        close()
+        return
+      }
+    } catch (error) {
+      console.error(`Ocurrió un error al actualizar la tarea ${error}`);
+    }
+  }
+
+  const handleLoadTask = useCallback(() => {
+    try {
+      if (taskToEdit?.id) reset(taskToEdit)
+    } catch (error) {
+      console.error(`Ocurrió un error al mostrar la información de la tarea : ${error}`);
+    }
+  }, [taskToEdit?.id])
+
+  useEffect(() => handleLoadTask(), [])
 
   return (
     <>
@@ -43,7 +96,7 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
         open={isOpen}
         as="div"
         className="relative z-10 focus:outline-none"
-        onClose={close}
+        onClose={() => {}}
       >
         <DialogBackdrop className="fixed inset-0 bg-black/50" />
 
@@ -53,7 +106,7 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
               transition
               className="w-full max-w-md rounded-xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 font-montserrat-regular"
             >
-              <DialogTitle as="h3" className="text-base/7 font-montserrat-bold text-center">
+              <DialogTitle as="h3" className="font-montserrat-bold text-center">
                 Añade nueva tarea
               </DialogTitle>
 
@@ -98,9 +151,19 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
                     <select
                       id="category"
                       className="border-1 border-gray-400 rounded-md py-1 outline-none"
-                      {...register('categoryId', { required: true })}
+                      {...register('categoryId', { required: true, valueAsNumber: true })}
                     >
-
+                      <option value="">
+                        --- Selecciona una opción ---
+                      </option>
+                      {categories.map(category => (
+                        <option
+                          key={category.id}
+                          value={category.id}
+                        >
+                          {category.name}
+                        </option>
+                      ))}
                     </select>
                     <ErrorMessage
                       error={errors.categoryId ? 'La categoria es obligatoria' : ''}
@@ -109,16 +172,19 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
                 </div>
                 <div className="mt-4 flex justify-center gap-2">
                   <Button
+                    className="items-center gap-2 rounded-md bg-gray-400 px-3 py-1.5 text-sm/6 font-semibold text-white font-montserrat-bold cursor-pointer hover:bg-gray-500"
+                    onClick={() => {
+                      setTaskToEdit(null)
+                      close()
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
                     className="items-center gap-2 rounded-md bg-sky-600 px-3 py-1.5 text-sm/6 font-semibold text-white font-montserrat-bold cursor-pointer hover:bg-sky-700"
                     type="submit"
                   >
                     Guardar
-                  </Button>
-                  <Button
-                    className="items-center gap-2 rounded-md bg-gray-400 px-3 py-1.5 text-sm/6 font-semibold text-white font-montserrat-bold cursor-pointer hover:bg-gray-500"
-                    onClick={close}
-                  >
-                    Cancelar
                   </Button>
                 </div>
               </form>

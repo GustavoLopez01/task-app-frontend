@@ -1,8 +1,11 @@
 import { useNavigate, NavLink } from 'react-router'
 import { ROUTES } from '@/constants/constants'
+import useStore from '@/store/store'
 
 export const Sidebar = () => {
   const navigate = useNavigate()
+
+  const setIsOpen = useStore(state => state.setIsOpen)
 
   return (
     <div className="max-w-xs min-w-xs font-montserrat-regular border-r-1 border-gray-200 h-full flex flex-col shadow-xl">
@@ -22,6 +25,7 @@ export const Sidebar = () => {
                 navigate(route.link)
                 return
               }
+              setIsOpen(true)
             }}
           >
             <span className="material-icons hover:text-white">{route.icon}</span>
