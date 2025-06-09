@@ -2,13 +2,20 @@ import { useNavigate, NavLink } from 'react-router'
 import { ROUTES } from '@/constants/constants'
 import useStore from '@/store/store'
 
-export const Sidebar = () => {
-  const navigate = useNavigate()
+type SidebarProps = {
+  showNavbar: boolean
+}
 
+export const Sidebar = ({ showNavbar }: SidebarProps) => {
+  const navigate = useNavigate()
   const setIsOpen = useStore(state => state.setIsOpen)
 
   return (
-    <div className="max-w-xs min-w-xs font-montserrat-regular border-r-1 border-gray-200 h-full flex flex-col shadow-xl">
+    <div
+      className={`${showNavbar ? 'absolute' : 'hidden'}
+         max-w-xs min-w-xs font-montserrat-regular border-r-1 border-gray-200 h-full lg:flex flex-col shadow-xl bg-white flex
+      `}
+    >
       <h1 className="font-montserrat-bold text-2xl text-center py-3 text-sky-700">
         Task App
       </h1>

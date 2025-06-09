@@ -105,7 +105,7 @@ export default function Tasks() {
       >
         {tasks.length > 0 ? (
           <>
-            <div className="flex justify-between">
+            <div className="flex flex-col lg:justify-between lg:flex-row">
               <h1 className="font-montserrat-bold uppercase text-2xl">
                 mis tareas
               </h1>
@@ -137,8 +137,8 @@ export default function Tasks() {
                   ))}
                 </select>
               </div>
-
             </div>
+
             <table className="mt-6">
               <thead>
                 <tr>
