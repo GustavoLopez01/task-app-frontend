@@ -38,10 +38,13 @@ export type TaskBody = {
   title: string
   description: string
   number: number
+  isCompleted: boolean
   categoryId: number
+  createdAt: string
+  updatedAt: string
 }
 
-export type NewTask = Omit<TaskBody, 'id'>
+export type NewTask = Omit<TaskBody, 'id' | 'createdAt' | 'updatedAt'>
 
 export type TaskResponse = {
   success: boolean

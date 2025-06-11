@@ -1,6 +1,6 @@
 import { useState, lazy } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
-import { registerUser } from '@/api/Auth'
+import { registerUser } from '@/api/auth'
 import type { NewUser, NewUserResponse } from '@/types'
 
 const InputWithLabel = lazy(() => import('@/components/inputs/InputWithLabel'))

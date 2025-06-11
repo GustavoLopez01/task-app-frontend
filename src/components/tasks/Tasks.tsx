@@ -1,13 +1,19 @@
-import { 
-  lazy, 
-  useCallback, 
-  useEffect, 
-  useMemo, 
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
   useState
 } from 'react'
 import useStore from '@/store/store'
-import { fetchDeleteTask, fetchGetTasks } from '@/api/task'
+import Card from './Card'
+import { 
+  fetchCompletedTask, 
+  fetchDeleteTask, 
+  fetchGetTasks
+} from '@/api/task'
 import { fetchGetCategories } from '@/api/category'
+import type { TaskBody } from '@/types'
 
 const AddTask = lazy(() => import('@/components/modal/AddTask'))
 const Alert = lazy(() => import('@/components/modal/Alert'))
@@ -20,12 +26,10 @@ export default function Tasks() {
 
   const setTasks = useStore(state => state.setTasks)
   const setCategories = useStore(state => state.setCategories)
-  const setTaskToEdit = useStore(state => state.setTaskToEdit)
-  const setTask = useStore(state => state.setTask)
   const setIsOpen = useStore(state => state.setIsOpen)
 
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
-  const [currentCategory, setCurrentCategory] = useState(1)
+  const [currentCategory, setCurrentCategory] = useState(0)
 
   const handleGetTasks = async () => {
     try {
@@ -64,12 +68,28 @@ export default function Tasks() {
     }
   }
 
-  const getCategoryName = useCallback((id: number) => {
-    return categories.find(category => category.id === id)?.name
-  }, [categories])
+  const handleCompleted = async (id: TaskBody['id']) => {
+    try {
+      const response = await fetchCompletedTask(id)
+      if (response?.success) {
+        const updatedTasks = tasks.map(task => {
+          if (task.id === id) {
+            return {
+              ...task,
+              isCompleted: true
+            }
+          }
+          return task
+        })
+        setTasks(updatedTasks)
+      }
+    } catch (error) {
+      console.error(`Ocurrió un error al completar la tarea ${error}`);
+    }
+  }
 
   const tasksToShow = useMemo(() => {
-    if(!currentCategory) return tasks
+    if (!currentCategory) return tasks
     return tasks.filter(task => task.categoryId === currentCategory) || []
   }, [currentCategory, tasks])
 
@@ -81,19 +101,23 @@ export default function Tasks() {
   return (
     <>
       {isOpen && (
-        <AddTask
-          close={() => setIsOpen(!isOpen)}
-          isOpen={isOpen}
-        />
+        <Suspense fallback={<></>}>
+          <AddTask
+            close={() => setIsOpen(!isOpen)}
+            isOpen={isOpen}
+          />
+        </Suspense>
       )}
 
       {isOpenConfirmation && (
-        <Alert
-          isOpen={isOpenConfirmation}
-          message={`¿Estas seguro de eliminar la tarea ${task.title}?`}
-          handleAccept={handleDeleteTask}
-          close={() => setIsOpenConfirmation(false)}
-        />
+        <Suspense fallback={<></>}>
+          <Alert
+            isOpen={isOpenConfirmation}
+            message={`¿Estas seguro de eliminar la tarea ${task.title}?`}
+            handleAccept={handleDeleteTask}
+            close={() => setIsOpenConfirmation(false)}
+          />
+        </Suspense>
       )}
 
       <div
@@ -125,7 +149,7 @@ export default function Tasks() {
                   <option
                     value={0}
                   >
-                    --- Selecciona una opción ---
+                    Todas las tareas
                   </option>
                   {categories.map(category => (
                     <option
@@ -139,58 +163,18 @@ export default function Tasks() {
               </div>
             </div>
 
-            <table className="mt-6">
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Titulo</th>
-                  <th>Categoria</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasksToShow.map((task, index) => (
-                  <tr
-                    key={`task-${task.id}`}
-                    className={
-                      `h-14 ${index % 2 !== 0 ? 'bg-sky-100' : ''}`
-                    }
-                  >
-                    <td className="text-center"> {index + 1} </td>
-                    <td className="text-center"> {task.title} </td>
-                    <td className="text-center">
-                      <span className="bg-orange-500 rounded-full py-1 px-3 text-white font-montserrat-bold cursor-pointer">
-                        {getCategoryName(task.categoryId)}
-                      </span>
-                    </td>
-                    <td className="text-center">
-                      <button
-                        className="cursor-pointer"
-                        onClick={() => {
-                          setTaskToEdit(task)
-                          setIsOpen(true)
-                        }}
-                      >
-                        <span className="material-icons text-sky-600 hover:text-sky-500">
-                          mode_edit
-                        </span>
-                      </button>
-                      <button
-                        className="cursor-pointer"
-                        onClick={() => {
-                          setTask(task)
-                          setIsOpenConfirmation(true)
-                        }}
-                      >
-                        <span className="material-icons text-red-600 hover:text-red-500">
-                          delete
-                        </span>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="flex flex-wrap gap-3 mt-2">
+              {tasksToShow.map((task) => (
+                <Card
+                  key={task.id}
+                  task={task}
+                  handleCompleted={(id: TaskBody['id']) => {
+                    handleCompleted(id)
+                  }}
+                  setIsOpenConfirmation={setIsOpenConfirmation}
+                />
+              ))}
+            </div>
           </>
         ) : (
           <>

@@ -27,7 +27,10 @@ const useStore = create<State & Action>()((set) => ({
     description: '',
     number: 1,
     id: 0,
-    title: ''
+    isCompleted: false,
+    title: '',
+    createdAt: '',
+    updatedAt: ''
   },
   categories: [],
   task: {
