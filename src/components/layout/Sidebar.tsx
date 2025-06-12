@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { useNavigate, NavLink } from 'react-router'
-import { ROUTES } from '@/constants/constants'
 import useStore from '@/store/store'
+import { getUser } from '@/api/user'
+import { ROUTES } from '@/constants/constants'
 
 type SidebarProps = {
   showNavbar: boolean
@@ -8,12 +10,40 @@ type SidebarProps = {
 
 export const Sidebar = ({ showNavbar }: SidebarProps) => {
   const navigate = useNavigate()
+  const setUser = useStore(state => state.setUser)
+  const setIsOpenProfile = useStore(state => state.setIsOpenProfile)
   const setIsOpen = useStore(state => state.setIsOpen)
+
+  const handleNavigation = (link: string) => {
+    switch (link) {
+      case 'tasks':
+        navigate(link)
+        break
+      case 'add-task':
+        setIsOpen(true)
+        break
+      case 'profile':
+        setIsOpenProfile(true)
+        break
+      default:
+        break
+    }
+  }
+
+  const handleGetUser = async () => {
+    const response = await getUser()
+    if (response?.success) {
+      setUser(response.user)
+    }
+  }
+
+  useEffect(() => {
+    handleGetUser()
+  }, [])
 
   return (
     <div
-      className={`${showNavbar ? 'absolute' : 'hidden'}
-         max-w-xs min-w-xs font-montserrat-regular border-r-1 border-gray-200 h-full lg:flex flex-col shadow-xl bg-white flex
+      className={`${showNavbar ? 'fixed' : 'hidden'} max-w-xs min-w-xs font-montserrat-regular border-r-1 border-gray-200 h-full lg:flex flex-col shadow-xl bg-white flex z-10
       `}
     >
       <h1 className="font-montserrat-bold text-2xl text-center py-3 text-sky-700">
@@ -27,12 +57,7 @@ export const Sidebar = ({ showNavbar }: SidebarProps) => {
             className="cursor-pointer flex items-center text-left justify-center gap-3 py-2 rounded-full transition-all text-sky-600 hover:bg-sky-700 hover:text-white"
             onClick={() => {
               if (window.location.pathname.includes(route.link)) return
-
-              if (!route.link.includes('add-task')) {
-                navigate(route.link)
-                return
-              }
-              setIsOpen(true)
+              handleNavigation(route.link)
             }}
           >
             <span className="material-icons hover:text-white">{route.icon}</span>

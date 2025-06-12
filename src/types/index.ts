@@ -17,11 +17,15 @@ export type AuthLoginResponse = {
   message: string
 }
 
-export type NewUser = {
+export type UserBody = {
+  id: number
   name: string
   age: number
   email: string
   password: string
+}
+
+export type NewUser = Omit<UserBody, 'id'> & {
   repeatPassword: string
 }
 
@@ -72,4 +76,10 @@ export type CategoriesResponse = {
 export type GeneralResponse = {
   success: boolean
   message: string
+}
+
+export type UserResponse = {
+  success: boolean
+  user: UserBody
+  errors: string[]
 }
