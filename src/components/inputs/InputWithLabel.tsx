@@ -1,4 +1,4 @@
-import { memo, lazy } from 'react'
+import { memo, lazy, Suspense } from 'react'
 
 const ErrorMessage = lazy(() => import('@/components/ErrorMessage'))
 
@@ -38,9 +38,11 @@ const InputWithLabel = memo(({
         {...register}
       />
       {error && (
-        <ErrorMessage
-          error={error}
-        />
+        <Suspense fallback={<></>}>
+          <ErrorMessage
+            error={error}
+          />
+        </Suspense>
       )}
     </div>
   )

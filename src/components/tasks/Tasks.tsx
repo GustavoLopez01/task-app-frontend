@@ -163,7 +163,7 @@ export default function Tasks() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-3 mt-2">
+            <div className="flex flex-wrap justify-center gap-9 mt-2 overflow-y-auto">
               {tasksToShow.map((task) => (
                 <Card
                   key={task.id}

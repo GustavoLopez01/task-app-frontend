@@ -7,18 +7,18 @@ import {
 } from "@headlessui/react"
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import useStore from '@/store/store'
+import { updateUser } from "@/api/user"
 import InputWithLabel from '../inputs/InputWithLabel'
 import type { UserBody } from '@/types'
-import { updateUser } from "@/api/user"
 
 const Profile = () => {
   const setIsOpenProfile = useStore(state => state.setIsOpenProfile)
+  const setUser = useStore(state => state.setUser)
   const isOpenProfile = useStore(state => state.isOpenProfile)
   const user = useStore(state => state.user)
 
   const {
     formState: { errors },
-    reset,
     handleSubmit,
     register,
   } = useForm<UserBody>({
@@ -27,8 +27,11 @@ const Profile = () => {
 
   const onSubmit: SubmitHandler<UserBody> = async (data) => {
     const response = await updateUser(data)
-    console.log(response);
-
+    if (response?.success) {
+      setIsOpenProfile(false)
+      setUser(response.user)
+      return
+    }
   }
 
   return (
@@ -47,7 +50,7 @@ const Profile = () => {
               transition
               className="w-full max-w-md rounded-xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 font-montserrat-regular"
             >
-              <DialogTitle as="h3" className="font-montserrat-bold text-center">
+              <DialogTitle as="h3" className="text-xl font-montserrat-bold text-center">
                 Mis datos
               </DialogTitle>
 

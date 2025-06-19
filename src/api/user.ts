@@ -13,7 +13,7 @@ export const getUser = async (): Promise<UserResponse | undefined> => {
   }
 }
 
-export const updateUser = async (user: UserBody): Promise<UserBody | undefined> => {
+export const updateUser = async (user: UserBody): Promise<UserResponse | undefined> => {
   try {
     const URL = `${import.meta.env.VITE_BACKEND_URL}/user/${user.id}`
     const response = await fetch(URL, {

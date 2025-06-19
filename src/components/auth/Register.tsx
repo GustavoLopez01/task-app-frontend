@@ -1,9 +1,8 @@
-import { useState, lazy } from 'react'
+import { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { registerUser } from '@/api/auth'
+import InputWithLabel from '../inputs/InputWithLabel'
 import type { NewUser, NewUserResponse } from '@/types'
-
-const InputWithLabel = lazy(() => import('@/components/inputs/InputWithLabel'))
 
 type RegisterProps = {
   setIsLogin: (value: boolean) => void
@@ -36,6 +35,7 @@ const Register = ({ setIsLogin }: RegisterProps) => {
     try {
       const response: NewUserResponse = await registerUser(data)
       if (response.success) {
+        setIsLogin(true)
         return
       }
       setErrorResponse(response.message)

@@ -36,6 +36,7 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
   const onSubmit: SubmitHandler<NewTask> = async (data) => {
     if (!taskToEdit?.id) {
       await handleSaveTask(data)
+      return
     }
     await handleUpdateTask(data)
   }
@@ -105,7 +106,7 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
               transition
               className="w-full max-w-md rounded-xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 font-montserrat-regular"
             >
-              <DialogTitle as="h3" className="font-montserrat-bold text-center">
+              <DialogTitle as="h3" className="text-xl font-montserrat-bold text-center">
                 Añade nueva tarea
               </DialogTitle>
 
