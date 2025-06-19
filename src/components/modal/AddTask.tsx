@@ -5,13 +5,13 @@ import {
   DialogTitle,
   DialogBackdrop
 } from '@headlessui/react'
-import { memo, lazy, useCallback, useEffect } from 'react'
+import { memo, lazy, useCallback, useEffect, Suspense } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import useStore from '@/store/store'
+import InputWithLabel from '../inputs/InputWithLabel'
 import { fetchSaveTask, fetchUpdateTask } from '@/api/task'
 import type { NewTask } from '@/types'
 
-const InputWithLabel = lazy(() => import('@/components/inputs/InputWithLabel'))
 const ErrorMessage = lazy(() => import('@/components/ErrorMessage'))
 
 type AddTaskProps = {
@@ -36,6 +36,7 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
   const onSubmit: SubmitHandler<NewTask> = async (data) => {
     if (!taskToEdit?.id) {
       await handleSaveTask(data)
+      return
     }
     await handleUpdateTask(data)
   }
@@ -60,9 +61,8 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
   const handleUpdateTask = async (data: NewTask) => {
     try {
       const response = await fetchUpdateTask({
-        ...data,
-        id: taskToEdit?.id!
-      })
+        ...data
+      }, taskToEdit?.id!)
 
       if (response?.success) {
         const updatedTasks = tasks.map(task => {
@@ -96,7 +96,7 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
         open={isOpen}
         as="div"
         className="relative z-10 focus:outline-none"
-        onClose={() => {}}
+        onClose={() => { }}
       >
         <DialogBackdrop className="fixed inset-0 bg-black/50" />
 
@@ -106,7 +106,7 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
               transition
               className="w-full max-w-md rounded-xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 font-montserrat-regular"
             >
-              <DialogTitle as="h3" className="font-montserrat-bold text-center">
+              <DialogTitle as="h3" className="text-xl font-montserrat-bold text-center">
                 Añade nueva tarea
               </DialogTitle>
 
@@ -136,9 +136,11 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
                       {...register('description', { required: true })}
                     />
 
-                    <ErrorMessage
-                      error={errors.description ? 'La descripción es obligatoria' : ''}
-                    />
+                    <Suspense fallback={<></>}>
+                      <ErrorMessage
+                        error={errors.description ? 'La descripción es obligatoria' : ''}
+                      />
+                    </Suspense>
                   </div>
 
                   <div className="flex flex-col">
@@ -165,9 +167,12 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
                         </option>
                       ))}
                     </select>
-                    <ErrorMessage
-                      error={errors.categoryId ? 'La categoria es obligatoria' : ''}
-                    />
+
+                    <Suspense fallback={<></>}>
+                      <ErrorMessage
+                        error={errors.categoryId ? 'La categoria es obligatoria' : ''}
+                      />
+                    </Suspense>
                   </div>
                 </div>
                 <div className="mt-4 flex justify-center gap-2">

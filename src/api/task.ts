@@ -4,7 +4,7 @@ import type {
   GeneralResponse,
   TasksResponse,
   TaskResponse,
-  TaskBody
+  TaskBody,
 } from '@/types'
 
 export const fetchGetTasks = async (): Promise<TasksResponse | undefined> => {
@@ -33,9 +33,9 @@ export const fetchSaveTask = async (task: NewTask): Promise<TaskResponse | undef
   }
 }
 
-export const fetchUpdateTask = async (task: TaskBody): Promise<TaskResponse | undefined> => {
+export const fetchUpdateTask = async (task: NewTask, id: number): Promise<TaskResponse | undefined> => {
   try {
-    const URL = `${import.meta.env.VITE_BACKEND_URL}/task/${task.id}`
+    const URL = `${import.meta.env.VITE_BACKEND_URL}/task/${id}`
     const response = await fetch(URL, {
       method: 'PUT',
       headers: getHeaders(),
@@ -44,6 +44,20 @@ export const fetchUpdateTask = async (task: TaskBody): Promise<TaskResponse | un
     return await response.json()
   } catch (error) {
     console.error(`Ocurrió un error - fetchUpdateTask: ${error}`)
+  }
+}
+
+export const fetchCompletedTask = async (id: TaskBody['id']): Promise<GeneralResponse | undefined> => {
+  try {
+    const URL = `${import.meta.env.VITE_BACKEND_URL}/task/completed-task`
+    const response = await fetch(URL, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ id })
+    })
+    return await response.json()
+  } catch (error) {
+    console.error(`Ocurrió un error - fetchCompletedTask: ${error}`);
   }
 }
 
