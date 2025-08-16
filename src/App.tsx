@@ -1,12 +1,33 @@
 import { useState } from 'react'
 import Login from '@/components/auth/Login'
 import Register from '@/components/auth/Register'
+import useAuth from './hooks/useAuth'
+import AuthContext from './context/AuthContext'
+import Dashboard from './components/layout/Dashboard'
 
 function App() {
+  const { 
+    isAuthenticate, 
+    resetAuth, 
+    setIsAuthenticate
+  } = useAuth()
+  
   return (
-    <main className="h-screen">
-      <ContainerAuth />
-    </main>
+    <AuthContext.Provider
+      value={{
+        isAuthenticate,
+        setIsAuthenticate,
+        resetAuth
+      }}
+    >
+      <main className="h-screen">
+        {isAuthenticate ? (
+          <Dashboard />
+        ) : (
+          <ContainerAuth />
+        )}
+      </main>
+    </AuthContext.Provider>
   )
 }
 

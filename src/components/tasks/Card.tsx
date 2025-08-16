@@ -25,7 +25,7 @@ export default function Card({
 
   return (
     <div
-      className="rounded-md w-96 shadow px-5 py-3 space-y-1 flex flex-col border-1 border-gray-300"
+      className="rounded-md shadow px-5 py-3 space-y-1 flex flex-col border-1 border-gray-300"
     >
       <p className="font-montserrat-bold text-[18px]">
         {changeChainString(task.title)}

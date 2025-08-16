@@ -163,7 +163,7 @@ export default function Tasks() {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-9 mt-2 overflow-y-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-9 mt-2 overflow-y-auto">
               {tasksToShow.map((task) => (
                 <Card
                   key={task.id}

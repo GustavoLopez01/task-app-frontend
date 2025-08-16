@@ -1,14 +1,16 @@
 import { useEffect } from 'react'
-import { useNavigate, NavLink } from 'react-router'
+import { useNavigate } from 'react-router'
 import useStore from '@/store/store'
 import { getUser } from '@/api/user'
 import { ROUTES } from '@/constants/constants'
+import useAuthenticate from '@/hooks/useAuthenticate'
 
 type SidebarProps = {
   showNavbar: boolean
 }
 
 export const Sidebar = ({ showNavbar }: SidebarProps) => {
+  const { resetAuth } = useAuthenticate()
   const navigate = useNavigate()
   const setUser = useStore(state => state.setUser)
   const setIsOpenProfile = useStore(state => state.setIsOpenProfile)
@@ -35,6 +37,12 @@ export const Sidebar = ({ showNavbar }: SidebarProps) => {
     if (response?.success) {
       setUser(response.user)
     }
+  }
+
+  const handleLogout = () => {
+    sessionStorage.clear()
+    resetAuth()
+    navigate('/')
   }
 
   useEffect(() => {
@@ -69,12 +77,12 @@ export const Sidebar = ({ showNavbar }: SidebarProps) => {
       </nav>
 
       <div className="h-20 px-5">
-        <NavLink
-          to="/"
+        <button
+          onClick={handleLogout}
           className="text-center w-full cursor-pointer flex items-center justify-center gap-2 bg-sky-600 py-2 rounded-full text-white font-montserrat-bold transition hover:bg-sky-500">
           <span className="material-icons rotate-180">logout</span>
           Cerrar sesión
-        </NavLink>
+        </button>
       </div>
     </div>
   )
