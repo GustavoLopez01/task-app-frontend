@@ -1,5 +1,5 @@
 import { getHeaders } from '@/helpers'
-import type { AuthLogin, NewUser } from '@/types/index'
+import type { AuthLogin, GeneralResponse, NewUser } from '@/types/index'
 
 export const authLogin = async (auth: AuthLogin) => {
   try {
@@ -26,5 +26,17 @@ export const registerUser = async (user: NewUser) => {
     return await response.json()
   } catch (error) {
     console.error(`Ocurrió un error al registrar al usuario ${error}`)
+  }
+}
+
+export const isAuth = async (): Promise<GeneralResponse | undefined> => {
+  try {
+    const URL = `${import.meta.env.VITE_BACKEND_URL}/auth/isAuth`
+    const response = await fetch(URL, {
+      headers: getHeaders(),
+    })
+    return await response.json()
+  } catch (error) {
+    console.error(`Ocurrió un error al autenticar el usuario ${error}`)
   }
 }
