@@ -47,8 +47,8 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
         ...data,
         number: tasks.length + 1
       }
-      const response = await fetchSaveTask(body)
-      if (response?.success) {
+      const response = await fetchSaveTask(body)      
+      if (response?.success && response?.task) {
         setTasks([...tasks, response.task])
         close()
         return
@@ -63,14 +63,17 @@ const AddTask = memo(({ isOpen, close }: AddTaskProps) => {
       const response = await fetchUpdateTask({
         ...data
       }, taskToEdit?.id!)
-
-      if (response?.success) {
+      
+      if (response?.success && response.task) {
         const updatedTasks = tasks.map(task => {
-          if (task.id === response.task.id) {
-            return response.task
+          if (task.id === response.task!.id) {
+            return response.task!
           }
           return task
         })
+
+        console.log("lleaga");
+        
         setTasks(updatedTasks)
         close()
         return

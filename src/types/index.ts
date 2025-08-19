@@ -53,7 +53,7 @@ export type NewTask = Omit<TaskBody, 'id' | 'createdAt' | 'updatedAt'>
 export type TaskResponse = {
   success: boolean
   errors: Errors[]
-  task: TaskBody
+  task?: TaskBody
 }
 
 export type TasksResponse = {
@@ -80,6 +80,6 @@ export type GeneralResponse = {
 
 export type UserResponse = {
   success: boolean
-  user: UserBody
+  user?: UserBody
   errors: string[]
 }

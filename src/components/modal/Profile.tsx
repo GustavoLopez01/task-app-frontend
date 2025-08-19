@@ -26,11 +26,10 @@ const Profile = () => {
   })
 
   const onSubmit: SubmitHandler<UserBody> = async (data) => {
-    const response = await updateUser(data)
-    if (response?.success) {
-      setIsOpenProfile(false)
+    const response = await updateUser(data)    
+    if (response.success && response.user) {
       setUser(response.user)
-      return
+      setIsOpenProfile(false)
     }
   }
 

@@ -19,6 +19,14 @@ export const formatDate = (date: string): string => {
     year: 'numeric'
   })
 }
+
 export const changeChainString = (text: string): string => {
-  return text.length > 25 ? `${text.substring(0, 25)}...` : text 
+  return text.length > 25 ? `${text.substring(0, 25)}...` : text
+}
+
+export const defaultResponse = (message: string) => {
+  return {
+    message,
+    success: false
+  }
 }
