@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { registerUser } from '@/api/auth'
 import InputWithLabel from '../inputs/InputWithLabel'
-import type { NewUser, NewUserResponse } from '@/types'
+import type { NewUser } from '@/types'
 
 type RegisterProps = {
   setIsLogin: (value: boolean) => void
@@ -33,7 +33,7 @@ const Register = ({ setIsLogin }: RegisterProps) => {
     }
 
     try {
-      const response: NewUserResponse = await registerUser(data)
+      const response = await registerUser(data)
       if (response.success) {
         setIsLogin(true)
         return

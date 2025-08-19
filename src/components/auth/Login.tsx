@@ -1,8 +1,8 @@
 import { useState, lazy } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
-import { useNavigate } from 'react-router' 
+import { useNavigate } from 'react-router'
 import { authLogin } from '@/api/auth'
-import type { AuthLogin, AuthLoginResponse } from '@/types'
+import type { AuthLogin } from '@/types'
 
 const InputWithLabel = lazy(() => import('@/components/inputs/InputWithLabel'))
 
@@ -26,7 +26,7 @@ const Login = ({ setIsLogin }: LoginProps) => {
 
   const onSubmit: SubmitHandler<AuthLogin> = async (data) => {
     try {
-      const response: AuthLoginResponse = await authLogin(data)
+      const response = await authLogin(data)
       if (response.success) {
         document.cookie = `token=${response.token}`
         sessionStorage.setItem('token', response.token)

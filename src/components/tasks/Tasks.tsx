@@ -7,9 +7,9 @@ import {
 } from 'react'
 import useStore from '@/store/store'
 import Card from './Card'
-import { 
-  fetchCompletedTask, 
-  fetchDeleteTask, 
+import {
+  fetchCompletedTask,
+  fetchDeleteTask,
   fetchGetTasks
 } from '@/api/task'
 import { fetchGetCategories } from '@/api/category'
@@ -31,27 +31,19 @@ export default function Tasks() {
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
   const [currentCategory, setCurrentCategory] = useState(0)
 
-  const handleGetTasks = async () => {
+  const handleGetTasksAndCategories = async () => {
     try {
-      const response = await fetchGetTasks()
-      if (response?.success) {
-        setTasks(response.tasks)
-        return
-      }
+      const tasks = fetchGetTasks()
+      const categories = fetchGetCategories()
+      const [
+        responseTasks,
+        responseCategories
+      ] = await Promise.all([tasks, categories])
+      
+      setTasks(responseTasks.tasks)
+      setCategories(responseCategories.categories)
     } catch (error) {
-      console.error(`Ocurrió un error al obtener las tareas del usuario ${error}`);
-    }
-  }
-
-  const handleGetCategories = async () => {
-    try {
-      const response = await fetchGetCategories()
-      if (response?.success) {
-        setCategories(response.categories)
-        return
-      }
-    } catch (error) {
-      console.error(`Ocurrió un error al obtener las categorias ${error}`);
+      console.error(`Ocurrió un error al obtener la información: ${error}`);
     }
   }
 
@@ -94,8 +86,7 @@ export default function Tasks() {
   }, [currentCategory, tasks])
 
   useEffect(() => {
-    handleGetTasks()
-    handleGetCategories()
+    handleGetTasksAndCategories()
   }, [])
 
   return (
